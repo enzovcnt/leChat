@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <a href="{{ path('conversations') }}"><--back to conversations</a>
+    <h3>Messages : </h3>
+<div id="messages" {{ turbo_stream_listen('conversations/'~conversation.id, 'default', {withCredentials:true}) }}>
+        {% for message in conversation.messages %}
+
+            <p>{{ message.content }}</p>
+
+        {% endfor %}
+    </div>
+
+        {{ form_start(form) }}
+        {{ form_widget(form.content) }}
+        <button type="submit">post</button>
+        {{ form_end(form) }}
+
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
