@@ -22,40 +22,31 @@ final class ConversationController extends AbstractController
     #[Route('/', name: 'conversations')]
     public function index(UserRepository $userRepository): Response
     {
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('app_login');
-        }
+        if(!$this->getUser()){return $this->redirectToRoute('app_login');}
 
         return $this->render('conversation/index.html.twig', [
             'users' => $userRepository->findAll(),
         ]);
     }
-
     #[Route('/conversation/openwith/{id}', name: 'app_conversation_openwith')]
     public function openwith(User $withWhom, ConversationRepository $conversationRepository, EntityManagerInterface $manager): Response
     {
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('app_login');
-        }
-        if (!$withWhom) {
-            return $this->redirectToRoute('conversations');
-        }
+        if(!$this->getUser()){return $this->redirectToRoute('app_login');}
+        if(!$withWhom){return $this->redirectToRoute('conversations');}
 
         $conversation = $conversationRepository->findOneByCouple($withWhom, $this->getUser());
 
-        if (!$conversation) {
+        if(!$conversation){
             $conversation = new Conversation();
             $conversation->addParticipant($this->getUser());
             $conversation->addParticipant($withWhom);
             $manager->persist($conversation);
             $manager->flush();
             $idConversation = $conversation->getId();
-        } else {
-            $idConversation = $conversation->getId();
-        }
+        }else{$idConversation = $conversation->getId();}
 
         return $this->redirectToRoute('app_conversation_open', [
-            "id" => $idConversation,
+            "id"=>$idConversation,
         ]);
     }
 
@@ -65,7 +56,7 @@ final class ConversationController extends AbstractController
         Request $request,
         EntityManagerInterface $manager,
         HubInterface $hub,
-//        MercureJwtGenerator $jwtGenerator
+        MercureJwtGenerator $jwtGenerator
     ): Response
     {
         if(!$this->getUser()){return $this->redirectToRoute('app_login');}
@@ -81,6 +72,7 @@ final class ConversationController extends AbstractController
             $message->setConversation($conversation);
             $manager->persist($message);
             $manager->flush();
+
             $update = new Update(
                 topics: "conversations/".$conversation->getId(),
                 data: $this->renderView('message/stream.html.twig', [
@@ -98,10 +90,16 @@ final class ConversationController extends AbstractController
             'conversation' => $conversation,
             'form' => $form,
         ]);
-
+        $jwt = $jwtGenerator->generate($this->getUser());
+        $hubUrl = $hub->getPublicUrl();
+        $response->headers->set(key:'set-cookie',
+            values:"mercureAuthorization=$jwt;
+                Path=$hubUrl; HttpOnly;"
+        );
 
 
         return $response;
 
     }
+
 }

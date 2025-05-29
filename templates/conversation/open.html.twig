@@ -3,7 +3,7 @@
 {% block body %}
     <a href="{{ path('conversations') }}"><--back to conversations</a>
     <h3>Messages : </h3>
-<div id="messages" {{ turbo_stream_listen('conversations/'~conversation.id, 'default', {withCredentials:true}) }}>
+<div id="messages" {{ turbo_stream_listen('conversations/' ~ conversation.id, 'default', {withCredentials:true}) }}>
         {% for message in conversation.messages %}
 
             <p>{{ message.content }}</p>

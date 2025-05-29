@@ -26,8 +26,8 @@ services:
     environment:
       # Uncomment the following line to disable HTTPS,
       SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: 'mercure'
-      MERCURE_SUBSCRIBER_JWT_KEY: 'mercure'
+      MERCURE_PUBLISHER_JWT_KEY: 'mercurefezijfoezcoiezoivneivzoiejfioezjfez'
+      MERCURE_SUBSCRIBER_JWT_KEY: 'mercurefezijfoezcoiezoivneivzoiejfioezjfez'
       # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins http://localhost:8000
